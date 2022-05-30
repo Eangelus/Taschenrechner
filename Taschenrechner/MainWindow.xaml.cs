@@ -20,11 +20,14 @@ namespace Taschenrechner
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Decimal> liste1 = new List<Decimal>();
+        List<string> liste1 = new List<string>();
+        List<decimal> listeZR = new List<decimal>();
+
         string status = "";
         string valu = "";
-        Decimal a;
-        Decimal b;
+        decimal a;
+        decimal b;
+        decimal c;
         
 
         public MainWindow()
@@ -123,50 +126,62 @@ namespace Taschenrechner
         private void Bplus_Click(object sender, RoutedEventArgs e)
         {
             status = "+";
+            if(valu == "")
+            {
+                valu = "0";
+            }
             if (valu.Substring(0, 1) == ".")
             {
                 valu = "0" + valu;
             }
             a = decimal.Parse( valu, System.Globalization.CultureInfo.InvariantCulture);
-            liste1.Add(a);
             valu = "";
-            BoxErgebnis.Text = valu;
+            BoxErgebnis.Text = a.ToString();
+            listeZR.Add(a);
+            liste1.Add(a + " + ");
             
         }
 
         private void Bgleich_Click(object sender, RoutedEventArgs e)
         {
-
+            Kblock.Text = "";
             if (status == "+")
             {
-                if ( valu == "") { 
-                        valu = "0";
-                }
-                b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-                liste1.Add(b);
-                Decimal c = a + b;
-                liste1.Add(c);
 
-                BoxErgebnis.Text = c.ToString();
+                b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
+                listeZR.Add(b);
+                liste1.Add(b.ToString());
+                decimal sum = 0;
+                for (int i = 0; i < listeZR.Count; i++) {
+                    sum = sum + listeZR[i] ;
+                }
+                listeZR.Clear();
+                liste1.Add(" = " + sum.ToString() + "\n");
+                valu = sum.ToString();
+                listeZR.Add(sum);
+                sum = 0;
                 a = 0;
                 b = 0;
-                valu = "";
+                
             }
             else if (status == "-")
             {
-                if (valu == "")
-                {
-                    valu = "0";
-                }
-                b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-                liste1.Add(b);
-                Decimal c = a - b;
-                liste1.Add(c);
 
-                BoxErgebnis.Text = c.ToString();
+                b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
+                liste1.Add(b.ToString());
+                listeZR.Add(b);
+                decimal sum = listeZR[0];
+                for (int i = 1; i < listeZR.Count; i++)
+                {
+                    sum = sum - listeZR[i];
+                }
+                listeZR.Clear();
+                liste1.Add(" = "+ sum.ToString() + "\n");
+                valu = sum.ToString();
+                listeZR.Add(sum);
+                sum = 0;
                 a = 0;
                 b = 0;
-                valu = "";
             }
             else if (status == "*")
             {
@@ -175,27 +190,27 @@ namespace Taschenrechner
                     valu = "0";
                 }
                 b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-                liste1.Add(b);
-                Decimal c = a * b;
-                liste1.Add(c);
-
-                BoxErgebnis.Text = c.ToString();
+                liste1.Add(b.ToString());
+                listeZR.Add(b);
+                decimal sum = listeZR[0];
+                for (int i = 1; i < listeZR.Count; i++)
+                {
+                    sum = sum * listeZR[i];
+                }
+                listeZR.Clear();
+                liste1.Add(" = " + sum.ToString() + "\n");
+                valu = sum.ToString();
+                listeZR.Add(sum);
+                sum = 0;
                 a = 0;
                 b = 0;
-                valu = "";
-                for (int i = 0; i < liste1.Count; i++)
-                {
-                    Kblock.Text = liste1[i].ToString();
-                }
+
             }
             else if ( status == "/")
             {
-                if (valu == "")
-                {
-                    valu = "0";
-                }
+
                 b = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-                liste1.Add(b);
+                liste1.Add(b.ToString());
                 if ( a == 0 )
                 {
                     a = 1;
@@ -205,20 +220,32 @@ namespace Taschenrechner
                     b = 1;
                 }
 
-                Decimal c = a / b;
-                liste1.Add(c);
+                listeZR.Add(b);
+                decimal sum = listeZR[0];
 
-                BoxErgebnis.Text = c.ToString();
+                for (int i = 1; i < listeZR.Count; i++)
+                {
+                    sum = sum / listeZR[i];
+                }
+                listeZR.Clear();
+                liste1.Add(" = " + sum.ToString() + "\n");
+                listeZR.Add(sum);
+                valu = sum.ToString();
+                sum = 0;
                 a = 0;
                 b = 0;
-                valu = "";
+
             }
-         
+            sInListe();
         }
 
         private void Bmal_Click(object sender, RoutedEventArgs e)
         {
             status = "*";
+            if(valu == "")
+            {
+                valu = "0";
+            }
             if(valu == "0")
             {
                 valu = "1";
@@ -228,37 +255,48 @@ namespace Taschenrechner
                 valu = "0" + valu;
             }
             a = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-            liste1.Add(a);
+            
             valu = "";
-            BoxErgebnis.Text = valu;
-
+            BoxErgebnis.Text = a.ToString();
+            liste1.Add(a + " * ");
+            listeZR.Add(a);
         }
 
         private void Bgeteilt_Click(object sender, RoutedEventArgs e)
         {
             status = "/";
+            if( valu == "")
+            {
+                valu = "0";
+            }
             if (valu.Substring(0, 1) == ".")
             {
                 valu = "0" + valu;
             }
             a = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-            liste1.Add(a);
+            
             valu = "";
-            BoxErgebnis.Text = valu;
-
+            BoxErgebnis.Text = a.ToString();
+            liste1.Add(a + " / ");
+            listeZR.Add(a);
         }
 
         private void Bminus_Click(object sender, RoutedEventArgs e)
         {
             status = "-";
+            if(valu == "")
+            {
+                valu = "0";
+            }
             if (valu.Substring(0, 1) == ".")
             {
                 valu = "0" + valu;
             }
             a = decimal.Parse(valu, System.Globalization.CultureInfo.InvariantCulture);
-            liste1.Add(a);
             valu = "";
-            BoxErgebnis.Text = valu;
+            BoxErgebnis.Text = a.ToString();
+            listeZR.Add(a);
+            liste1.Add(a + " - ");
         }
 
         private void BClear_Click(object sender, RoutedEventArgs e)
@@ -266,6 +304,19 @@ namespace Taschenrechner
             a = 0;
             b = 0;
             valu = "";
+            liste1.Clear();
+            listeZR.Clear();
         }
+
+        private void sInListe()
+        {
+            for (int i =0; i < liste1.Count(); i++)
+            {
+
+                Kblock.Text +=  liste1[i].ToString() ;
+                
+            };
+        }
+
     }
 }
